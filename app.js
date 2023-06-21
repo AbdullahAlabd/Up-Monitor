@@ -1,4 +1,4 @@
-const connectDb = require("./src/configs/connect");
+const connectDb = require("./src/database/connect");
 const express = require("express");
 const dotenv = require("dotenv");
 
@@ -7,7 +7,6 @@ dotenv.config({ path: "./src/configs/config.env" });
 
 // to get request of json data
 app.use(express.json());
-
 
 async function start() {
   await connectDb(process.env.MONGODB_URI);
