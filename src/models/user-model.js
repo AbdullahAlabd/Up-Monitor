@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-// creating schema using mongoose
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    trim: true,
     required: true,
     minlength: [4, "Too short, min is 6 characters"],
     maxlength: [32, "Too long, max is 32 characters"]
@@ -11,20 +11,17 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
-    lowercase: true
+    trim: true,
+    lowercase: true,
+    unique: true
   },
   password: {
     type: String,
-    required: true,
-    minlength: [4, "Too short, min is 4 characters"],
-    maxlength: [32, "Too long, max is 32 characters"]
+    required: true
   },
-  salt: {
-    type: String
-  },
-  token: {
-    type: String
+  created: {
+    type: Date,
+    default: Date.now
   }
 });
 
