@@ -1,10 +1,10 @@
 const Joi = require("joi");
 
-// Register validation
+// register validation
 const registerSchema = Joi.object({
-  name: Joi.string().min(4).max(32).required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).max(32).required(),
+  name: Joi.string().min(4).max(32).required().label("Name"),
+  email: Joi.string().email().required().label("Email address"),
+  password: Joi.string().min(6).max(32).required(). label("Password"),
 });
 
 module.exports = registerSchema;
