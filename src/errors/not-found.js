@@ -1,7 +1,7 @@
 const httpError = require("http-errors");
 const CustomApiError = require("./custom-api");
 
-class NotFoundException extends CustomApiError {
+class NotFoundError extends CustomApiError {
   constructor(message) {
     super(message);
     // 404: client provided a valid URL, but the server cannot find the resource
@@ -9,4 +9,4 @@ class NotFoundException extends CustomApiError {
   }
 }
 
-module.exports = NotFoundException;
+module.exports = NotFoundError;
