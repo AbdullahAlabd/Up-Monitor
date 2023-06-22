@@ -5,7 +5,7 @@ class AlreadyExistsError extends CustomApiError {
   constructor(message) {
     super(message);
     // 409: client provided valid data, but is trying to create a resource that already exists
-    this.statusCode = httpError.Conflict;
+    this.statusCode = httpError.Conflict.prototype.statusCode;
   }
 }
 

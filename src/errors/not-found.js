@@ -5,7 +5,7 @@ class NotFoundError extends CustomApiError {
   constructor(message) {
     super(message);
     // 404: client provided a valid URL, but the server cannot find the resource
-    this.statusCode = httpError.NotFound;
+    this.statusCode = httpError.NotFound.prototype.statusCode;
   }
 }
 

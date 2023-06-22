@@ -4,6 +4,8 @@ const NotFoundError = require("./not-found");
 const UnauthenticatedError = require("./unauthenticated");
 const UnauthorizedError = require("./unauthorized");
 const AlreadyExistsError = require("./already-exists");
+const InternalServerError = require("./internal-server");
+const UnprocessableContentError = require("./unprocessable-content");
 
 module.exports = {
   CustomApiError,
@@ -11,5 +13,7 @@ module.exports = {
   NotFoundError,
   UnauthenticatedError,
   UnauthorizedError,
-  AlreadyExistsError
+  AlreadyExistsError,
+  InternalServerError,
+  UnprocessableContentError
 };
