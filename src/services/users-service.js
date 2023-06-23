@@ -1,31 +1,31 @@
 const userModel = require("../models/user-model");
 
-async function create(userDto) {
+const create = async (userDto) => {
   const createdUser = new userModel(userDto);
   return await createdUser.save();
-}
+};
 
-async function findAll() {
+const findAll = async () => {
   return await userModel.find().exec();
-}
+};
 
-async function findById(userId) {
-  return await userModel.findById(userId);
-}
+const findById = async (userId) => {
+  return userModel.findById(userId);
+};
 
-async function findByEmail(email) {
+const findByEmail = async (email) => {
   return await userModel.findOne({ email }).exec();
-}
+};
 
-async function update(userId, userDto) {
+const update = async (userId, userDto) => {
   return await userModel
     .findByIdAndUpdate(userId, userDto, { new: true })
     .exec();
-}
+};
 
-async function remove(id) {
+const remove = async (id) => {
   return await userModel.findByIdAndDelete(id).exec();
-}
+};
 
 module.exports = {
   create,

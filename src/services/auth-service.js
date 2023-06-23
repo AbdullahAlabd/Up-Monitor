@@ -11,7 +11,7 @@ const register = async (userDto) => {
   );
   if (userExists) {
     throw new customError.AlreadyExistsError(
-      "User already exist with the given emailId"
+      "User already exist with the given email address!"
     );
   }
   const hash = await hashData(userDto.password);
@@ -45,7 +45,7 @@ const refresh = async (userId, refreshToken) => {
   }
   try {
     const user = await verifyRefreshToken(refreshToken);
-    if (user?.userId != userId) {
+    if (user?.userId !== userId) {
       throw new customError.UnauthorizedError(
         "Invalid tokens, please login again"
       );
