@@ -29,7 +29,7 @@ const verifySend = async (userId) => {
   if (!user) {
     throw new customError.NotFoundError("User does not exist!");
   }
-  if(user.verified) {
+  if (user.verified) {
     throw new customError.BadRequestError("Your email is already verified!");
   }
   const tokensCount = await verificationTokenService.countByUserId(user._id);

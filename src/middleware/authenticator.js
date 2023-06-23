@@ -19,7 +19,7 @@ const authenticatorMiddleware = async (req, res, next) => {
           )
         );
       }
-      if(user.verified === false) {
+      if (user.verified === false) {
         return next(
           new customError.UnauthenticatedError(
             "Please verify your email first!"

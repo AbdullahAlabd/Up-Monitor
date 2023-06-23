@@ -14,9 +14,14 @@ const findByUserId = async (userId) => {
   return await verificationTokenModel.findOne({ userId }).exec();
 };
 
-
 const findLastByUserId = async (userId) => {
-  return (await verificationTokenModel.find({ userId }).sort({ createdAt: -1 }).limit(1).exec())[0];
+  return (
+    await verificationTokenModel
+      .find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .exec()
+  )[0];
 };
 
 const countByUserId = async (userId) => {

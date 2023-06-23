@@ -5,16 +5,16 @@ const verificationTokenSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: true
   },
   token: {
     type: String,
-    required: true,
+    required: true
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 24*60*60, // 24 Hours
+    expires: 24 * 60 * 60 // 24 Hours
   }
 });
 
