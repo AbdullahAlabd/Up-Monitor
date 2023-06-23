@@ -1,14 +1,33 @@
 const customError = require("../errors");
 const validators = require("../validators");
 
-const validatorMiddleware = function (validator) {
+const validationTarget = Object.freeze({
+  BODY: 1, // request body
+  PARAM: 2, // path params
+  QUERY: 3 // query params
+});
+
+const validator = function (validator, target = validationTarget.BODY) {
   if (!validators.hasOwnProperty(validator))
     throw new Error(`'${validator}' validator is not exist`);
 
   return async function (req, res, next) {
     try {
-      const validated = await validators[validator].validateAsync(req.body);
-      req.body = validated;
+      let validated;
+      switch (target) {
+        case validationTarget.BODY:
+          validated = await validators[validator].validateAsync(req.body);
+          req.body = validated;
+          break;
+        case validationTarget.PARAM:
+          validated = await validators[validator].validateAsync(req.params);
+          req.params = validated;
+          break;
+        case validationTarget.QUERY:
+          validated = await validators[validator].validateAsync(req.query);
+          req.query = validated;
+          break;
+      }
       return next();
     } catch (err) {
       if (err.isJoi)
@@ -26,4 +45,4 @@ const validatorMiddleware = function (validator) {
   };
 };
 
-module.exports = validatorMiddleware;
+module.exports = { validator, validationTarget };

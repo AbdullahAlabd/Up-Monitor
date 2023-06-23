@@ -1,19 +1,47 @@
 const jwt = require("jsonwebtoken");
 
 const getTokens = async (user) => {
-  const payload = { userId: user._id, role: user.role };
   const [accessToken, refreshToken] = await Promise.all([
-    jwt.sign(payload, process.env.ACCESS_TOKEN_PRIVATE_KEY, {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-    }),
-    jwt.sign(payload, process.env.REFRESH_TOKEN_PRIVATE_KEY, {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-    })
+    getAccessToken(user),
+    getRefreshToken(user)
   ]);
-  return {
-    accessToken,
-    refreshToken
-  };
+  return { accessToken, refreshToken };
 };
 
-module.exports = getTokens;
+const getAccessToken = async (user) => {
+  const payload = {
+    userId: user._id,
+    role: user.role,
+    isVerified: user.verified
+  };
+  const token = jwt.sign(payload, process.env.ACCESS_TOKEN_PRIVATE_KEY, {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+  });
+  return token;
+};
+
+const getRefreshToken = async (user) => {
+  const payload = {
+    userId: user._id,
+    role: user.role,
+    isVerified: user.verified
+  };
+  const token = jwt.sign(payload, process.env.REFRESH_TOKEN_PRIVATE_KEY, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+  });
+  return token;
+};
+
+const getVerificationToken = async (user) => {
+  const payload = {
+    userId: user._id,
+    role: user.role,
+    isVerified: user.verified
+  };
+  const token = jwt.sign(payload, process.env.VERIFICATION_TOKEN_PRIVATE_KEY, {
+    expiresIn: process.env.VERIFICATION_TOKEN_EXPIRY
+  });
+  return token;
+};
+
+module.exports = {getTokens, getVerificationToken};

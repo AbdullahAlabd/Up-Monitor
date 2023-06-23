@@ -19,8 +19,16 @@ const authenticatorMiddleware = async (req, res, next) => {
           )
         );
       }
+      if(user.verified === false) {
+        return next(
+          new customError.UnauthenticatedError(
+            "Please verify your email first!"
+          )
+        );
+      }
       req.body.userId = user._id; // for authorization
-      req.body.userRole = user.role; // for authorization
+      req.body.role = user.role; // for authorization
+      req.body.isVerified = user.verified; // for authorization
       next();
     } else {
       return next(
