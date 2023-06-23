@@ -44,4 +44,4 @@ const getVerificationToken = async (user) => {
   return token;
 };
 
-module.exports = {getTokens, getVerificationToken};
+module.exports = { getTokens, getVerificationToken };
