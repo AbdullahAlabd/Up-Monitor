@@ -1,25 +1,40 @@
 const userModel = require("../models/user-model");
 const customError = require("../errors");
-
 const jwt = require("jsonwebtoken");
 
 const authenticatorMiddleware = async (req, res, next) => {
   try {
     if (req.headers?.authorization?.split(" ")[0] === "JWT") {
       const token = req.headers.authorization.split(" ")[1];
-      const decode = await jwt.verify(token, process.env.SECRET_KEY);
+      const decode = await jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_PRIVATE_KEY
+      );
       // TODO: check if decode is enough
-      const user = await userModel.findById(decode?.id);
+      const user = await userModel.findById(decode?.userId);
       if (!user) {
-        throw new customError.UnauthenticatedError("Token is either missing or invalid!");
+        return next(
+          new customError.UnauthenticatedError(
+            "Token is either missing or invalid!"
+          )
+        );
       }
-      req.body.user = user;
+      req.body.userId = user._id; // for authorization
+      req.body.userRole = user.role; // for authorization
       next();
     } else {
-      throw new customError.UnauthenticatedError("Token is either missing or invalid!");
+      return next(
+        new customError.UnauthenticatedError(
+          "Token is either missing or invalid!"
+        )
+      );
     }
   } catch (error) {
-    throw new customError.UnauthenticatedError("Token is either missing or invalid!");
+    return next(
+      new customError.UnauthenticatedError(
+        "Token is either missing or invalid!"
+      )
+    );
   }
 };
 
