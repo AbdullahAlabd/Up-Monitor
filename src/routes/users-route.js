@@ -14,7 +14,7 @@ route.get("/verify", validator("verifyReceive", validationTarget.QUERY), authCon
 // get tokens using email and password
 route.post("/login", validator("login"), authController.login); 
 // get new access token using refresh token
-route.post("/refresh", [validator("refreshToken"), authenticator], authController.refresh); 
+route.post("/refresh", validator("refreshToken"), authController.refresh); 
 // disabled, can't be used with stateless jwt and no DB calls
 route.get("/logout", [authenticator], authController.logout); 
 

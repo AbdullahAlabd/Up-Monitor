@@ -10,7 +10,7 @@ const getTokens = async (user) => {
 
 const getAccessToken = async (user) => {
   const payload = {
-    userId: user._id,
+    userId: user._id.toString(),
     role: user.role,
     isVerified: user.verified
   };
@@ -22,7 +22,7 @@ const getAccessToken = async (user) => {
 
 const getRefreshToken = async (user) => {
   const payload = {
-    userId: user._id,
+    userId: user._id.toString(),
     role: user.role,
     isVerified: user.verified
   };
@@ -34,7 +34,7 @@ const getRefreshToken = async (user) => {
 
 const getVerificationToken = async (user) => {
   const payload = {
-    userId: user._id,
+    userId: user._id.toString(),
     role: user.role,
     isVerified: user.verified
   };

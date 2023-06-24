@@ -53,9 +53,8 @@ const login = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
   try {
-    const userId = req.body.userId.toString();
-    const refreshToken = req.body.refreshToken;
-    const tokens = await authService.refresh(userId, refreshToken);
+    const { refreshToken } = req.body;
+    const tokens = await authService.refresh(refreshToken);
     return res.status(200).json({
       success: true,
       accessToken: tokens.accessToken,

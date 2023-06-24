@@ -60,7 +60,8 @@ const verifyReceive = async (token) => {
     if (!user) {
       throw new customError.NotFoundError("User does not exist!");
     }
-    var lastToken = (await verificationTokenService.findLastByUserId(user._id))?.token;
+    var lastToken = (await verificationTokenService.findLastByUserId(user._id))
+      ?.token;
     //isLastToken.forEach((element) => {console.log(element);});
     if (lastToken !== token) {
       throw new customError.UnauthorizedError(
@@ -91,22 +92,22 @@ const login = async (userDto) => {
   }
 };
 
-const refresh = async (userId, refreshToken) => {
-  if (!userId) {
-    throw new customError.NotFoundError("User does not exist!");
-  }
+const refresh = async (refreshToken) => {
   try {
-    const user = await verifyRefreshToken(refreshToken);
-    if (user?.userId !== userId) {
-      throw new customError.UnauthorizedError(
-        "Invalid tokens, please login again"
-      );
-    }
+    const userPayload = await jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_PRIVATE_KEY
+    );
+    const user = {
+      _id: userPayload.userId,
+      role: userPayload.role,
+      verified: userPayload.isVerified
+    };
     const tokens = await getTokens(user);
     return tokens;
-  } catch (error) {
+  } catch(error) {
     throw new customError.UnauthorizedError(
-      "Invalid refresh token, please login again"
+      "Invalid or expired refresh token! please login again."
     );
   }
 };
@@ -115,24 +116,6 @@ const logout = async (userId) => {
   // Disabled
   // JWT tokens cannot be invalidated,
   // unless using DB storage and TTL tokens (resulting in worse performance)
-};
-
-const verifyRefreshToken = async (refreshToken) => {
-  if (!refreshToken) {
-    throw new customError.UnauthorizedError(
-      "Invalid or expired refresh token! please login again."
-    );
-  }
-  const payload = jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_PRIVATE_KEY
-  );
-  if (!payload) {
-    throw new customError.UnauthorizedError(
-      "Invalid or expired refresh token! please login again."
-    );
-  }
-  return payload;
 };
 
 const sendVerificationMail = async (user, token) => {
