@@ -5,7 +5,7 @@ const { getTokens, getVerificationToken } = require("../utils/generate-tokens");
 const hashData = require("../utils/hash-data");
 const verifyPassword = require("../utils/verity-password");
 const jwt = require("jsonwebtoken");
-const emailClient = require("../utils/email-client");
+const notificationService = require("../services/notification-service");
 
 const register = async (userDto) => {
   const userExists = await usersService.findByEmail(
@@ -105,7 +105,7 @@ const refresh = async (refreshToken) => {
     };
     const tokens = await getTokens(user);
     return tokens;
-  } catch(error) {
+  } catch (error) {
     throw new customError.UnauthorizedError(
       "Invalid or expired refresh token! please login again."
     );
@@ -119,23 +119,12 @@ const logout = async (userId) => {
 };
 
 const sendVerificationMail = async (user, token) => {
-  emailClient.sendEmail(
-    user.email,
-    "Verify your email address!",
-    `<H1>Hi ${user.name} <span class='emoji'>👋</span></H1>
-    </br>
-    <H3>Thanks for joining ${process.env.APP_NAME}<H3>
-    </br>
-    </br>
-    Click this link to confirm your email address and complete your registration process
-    </br>
-    <a href='${process.env.HOST}/api/v1/users/verify?token=${token}'>Verify email</a>
-    </br>
-    The link will expire after 24 hours.
-    </br>
-    </br>
-    </br>
-    ${process.env.APP_NAME}`
+  const { messageTemplates } = notificationService;
+  notificationService.notify(
+    user,
+    { token },
+    messageTemplates.verifyMail,
+    (forceChannels = ["email"])
   );
 };
 
