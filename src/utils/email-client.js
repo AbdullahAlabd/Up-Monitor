@@ -19,4 +19,4 @@ const sendEmail = async (email, subject, htmlMessage) => {
   console.log("email sent successfully");
 };
 
-module.exports = sendEmail;
+module.exports = {sendEmail};

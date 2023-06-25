@@ -5,7 +5,7 @@ const { getTokens, getVerificationToken } = require("../utils/generate-tokens");
 const hashData = require("../utils/hash-data");
 const verifyPassword = require("../utils/verity-password");
 const jwt = require("jsonwebtoken");
-const sendMail = require("../utils/send-mail");
+const emailClient = require("../utils/email-client");
 
 const register = async (userDto) => {
   const userExists = await usersService.findByEmail(
@@ -119,7 +119,7 @@ const logout = async (userId) => {
 };
 
 const sendVerificationMail = async (user, token) => {
-  sendMail(
+  emailClient.sendEmail(
     user.email,
     "Verify your email address!",
     `<H1>Hi ${user.name} <span class='emoji'>👋</span></H1>
