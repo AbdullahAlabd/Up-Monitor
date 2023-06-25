@@ -5,20 +5,21 @@ const authenticator = require("../middleware/authenticator");
 
 const route = express.Router();
 
-// [validation(req.body), authentication]
+// create a check [for the signed user]
 route.post("/", [authenticator, validator("checkBodyAdd")], checkController.add);
-// [validation(req.params), authentication, authorization]
+// get all checks [for the signed user]
 route.get(
-  "/all",
+  "/",
   [authenticator],
   checkController.getAll
 );
+// read a check by checkId [for the signed user]
 route.get(
   "/:checkId",
   [authenticator, validator("checkParams", validationTarget.PARAM)],
   checkController.get
 );
-// [validation(req.params, req.body), authentication, authorization]
+// update a check by checkId [for the signed user]
 route.put(
   "/:checkId",
   [
@@ -28,7 +29,7 @@ route.put(
   ],
   checkController.update
 );
-// [validation(req.params), authentication, authorization]
+// delete a check by checkId [for the signed user]
 route.delete(
   "/:checkId",
   [authenticator, validator("checkParams", validationTarget.PARAM)],
