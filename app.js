@@ -7,7 +7,9 @@ const agenda = require("./src/jobs/agenda");
 // routes
 const usersRoute = require("./src/routes/users-route");
 const checksRoute = require("./src/routes/checks-route");
+const reportsRoute = require("./src/routes/reports-route");
 
+// initialize express
 const app = express();
 dotenv.config({ path: "./src/configs/config.env" });
 
@@ -16,6 +18,7 @@ app.use(express.json());
 app.use("/api/v1/users", usersRoute);
 app.use(authentication);
 app.use("/api/v1/checks", checksRoute);
+app.use("/api/v1/reports", reportsRoute);
 app.use(errorHandlerMiddleware);
 
 // for graceful shutdown

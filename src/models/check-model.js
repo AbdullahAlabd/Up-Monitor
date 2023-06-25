@@ -98,7 +98,7 @@ const checkSchema = new mongoose.Schema({
       consecutiveFailures: 0,
       passedChecks: 0,
       totalChecks: 0,
-      totalUpTime: 0,
+      upTime: 0,
       totalTime: 0, // check lifetime
       avgResponseTime: 0,
     }

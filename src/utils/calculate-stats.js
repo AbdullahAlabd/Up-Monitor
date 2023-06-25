@@ -4,8 +4,8 @@ const calculateStats = (oldStats, success, responseTime, interval) => {
     consecutiveFailures: success ? 0 : oldStats.consecutiveFailures + 1,
     passedChecks: oldStats.passedChecks + success,
     totalChecks: oldStats.totalChecks + 1,
-    totalUpTime: (oldStats.totalChecks !== 0 ?
-       (oldStats.totalUpTime + (success ? interval : 0)) : 0),
+    upTime: (oldStats.totalChecks !== 0 ?
+       (oldStats.upTime + (success ? interval : 0)) : 0),
     totalTime: (oldStats.totalChecks !== 0 ?
        (oldStats.totalTime + interval) : 0),
     avgResponseTime:
