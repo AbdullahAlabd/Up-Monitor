@@ -3,8 +3,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const authentication = require("./src/middleware/authenticator");
 const errorHandlerMiddleware = require("./src/middleware/error-handler");
+const agenda = require("./src/jobs/agenda");
 // routes
 const usersRoute = require("./src/routes/users-route");
+const checksRoute = require("./src/routes/checks-route");
 
 const app = express();
 dotenv.config({ path: "./src/configs/config.env" });
@@ -13,7 +15,17 @@ dotenv.config({ path: "./src/configs/config.env" });
 app.use(express.json());
 app.use("/api/v1/users", usersRoute);
 app.use(authentication);
+app.use("/api/v1/checks", checksRoute);
 app.use(errorHandlerMiddleware);
+
+// for graceful shutdown
+async function graceful() {
+  await agenda.stop();
+  process.exit(0);
+}
+
+process.on("SIGTERM", graceful);
+process.on("SIGINT", graceful);
 
 async function start() {
   await connectDb(process.env.MONGODB_URI);
