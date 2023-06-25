@@ -47,6 +47,7 @@ const get = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
+    const {tag} = req.query;
     const userChecks = await checksService.findAllByUserId(req.body.userId);
     if (userChecks?.length === 0) {
       return res.status(200).json({
@@ -57,7 +58,7 @@ const getAll = async (req, res, next) => {
     }
     const presentableChecks = userChecks.map((check) =>
       getPresentableCheck(check)
-    );
+    ).filter(check => (tag ? check.tags.includes(tag) : true));
     return res.status(200).json({
       success: true,
       data: presentableChecks,
