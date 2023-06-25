@@ -1,5 +1,4 @@
 const verificationTokenModel = require("../models/verification-token-model");
-const userModel = require("../models/user-model");
 
 const create = async (tokenDto) => {
   const createdUser = new verificationTokenModel(tokenDto);
