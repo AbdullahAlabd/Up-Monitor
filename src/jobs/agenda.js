@@ -12,14 +12,18 @@ const agenda = new Agenda({
     collection: "jobs",
     options: { useUnifiedTopology: true }
   },
-  processEvery: "1 minutes",
+  processEvery: "10 seconds",
+  defaultLockLifetime: 10000,
   maxConcurrency: 20
 });
 
 // define all agenda jobs
-agenda.define("polling-job", async (job) => {
-  jobService.pollingJob(job);
-});
+agenda.define(
+  "polling-job",
+   async (job) => {
+    await jobService.pollingJob(job);
+  }
+);
 
 agenda
   .on("ready", async () => {
