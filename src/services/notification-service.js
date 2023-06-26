@@ -1,4 +1,5 @@
 const emailClient = require("../utils/email-client");
+const logger = require("../utils/logger");
 
 const notify = async (user, payload, template, forceChannels = []) => {
   for (const key in channels) {
@@ -16,11 +17,15 @@ const notify = async (user, payload, template, forceChannels = []) => {
 
 const notifiers = {
   notifyByEmail: async (user, parsedTemplate) => {
-    await emailClient.sendEmail(
-      user.email,
-      parsedTemplate.title,
-      parsedTemplate.message
-    );
+    try{
+      await emailClient.sendEmail(
+        user.email,
+        parsedTemplate.title,
+        parsedTemplate.message
+      );
+    } catch(error) {
+      logger.error(`[Email Client Error]: ${error}`);
+    }
   },
   notifyBySms: async (user, message) => {
     throw new Error("SMS not implemented");
