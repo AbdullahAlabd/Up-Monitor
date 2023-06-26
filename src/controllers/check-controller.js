@@ -5,12 +5,10 @@ const customError = require("../errors");
 const add = async (req, res, next) => {
   try {
     const check = await checksService.create(req.body);
-    const data = {
-      userId: check.userId,
+    await scheduler.schedulePollingJob({
       checkId: check._id,
       interval: check.interval
-    };
-    await scheduler.schedulePollingJob(data);
+    });
     const presentableCheck = getPresentableCheck(check);
     return res.status(200).json({
       success: true,
@@ -82,14 +80,14 @@ const update = async (req, res, next) => {
         "Unauthorized! you can only view your checks."
       );
     }
-    const data = {
-      userId: userId,
+    await scheduler.cancelPollingJob({ // cancel the old job
       checkId: checkId
-    };
-    await scheduler.cancelPollingJob(data); // cancel the old job
+    }); 
     const updatedCheck = await checksService.update(check._id, req.body); // update in db
-    data.interval = updatedCheck.interval; // new interval
-    await scheduler.schedulePollingJob(data); // schedule a new job
+    await scheduler.schedulePollingJob({ // schedule a new job
+      checkId: checkId,
+      interval: updatedCheck.interval
+    }); 
     const presentableCheck = getPresentableCheck(updatedCheck);
     return res.status(200).json({
       success: true,
@@ -113,11 +111,9 @@ const remove = async (req, res, next) => {
         "Unauthorized! you can only view your checks."
       );
     }
-    const data = {
-      userId: req.body.userId,
+    await scheduler.cancelPollingJob({
       checkId: checkId
-    };
-    await scheduler.cancelPollingJob(data);
+    });
     await checksService.remove(check._id);
     return res.status(200).json({
       success: true,
