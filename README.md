@@ -1,58 +1,48 @@
-# Backend Assessment
+# Up-Monitor
+![GitHub contributors](https://img.shields.io/github/contributors/AbdullahAlabd/Up-Monitor)
 
-Build an uptime monitoring RESTful API server that allows authenticated users to monitor URLs, and get detailed uptime reports about their availability, average response time, and total uptime/downtime.
 
-## Overview
+A URL monitoring service built with NodeJs and MongoDB.
 
-- Signup with email verification.
-- CRUD operations for URL checks (`GET`, `PUT` and `DELETE` can be called only by the user user who created the check).
-- Authenticated users can receive a notification whenever one of their URLs goes down or up again:
-  - Email.
-  - Webhook *(optional)*.
-- Authenticated users can get detailed uptime reports about their URLs availability, average response time, and total uptime/downtime.
-- Authenticated users can group their checks by tags and get reports by tag.
+That provides the user with API add URL checks, view statistical reports of the URL availability and be notified once the URL is down or up again.
 
-## Acceptance Criteria
 
-- APIs should be consuming and producing `application/json`.
-- Authenication should be stateless.
-- Each URL check may have the following options:
-  - `name`: The name of the check.
-  - `url`: The URL to be monitored.
-  - `protocol`: The resource protocol name `HTTP`, `HTTPS`, or `TCP`.
-  - `path`: A specific path to be monitored *(optional)*.
-  - `port`: The server port number *(optional)*.
-  - `webhook`: A webhook URL to receive a notification on *(optional)*.
-  - `timeout` *(defaults to 5 seconds)*: The timeout of the polling request *(optional)*.
-  - `interval` *(defaults to 10 minutes)*: The time interval for polling requests *(optional)*.
-  - `threshold` *(defaults to 1 failure)*: The threshold of failed requests that will create an alert *(optional)*.
-  - `authentication`: An HTTP authentication header, with the Basic scheme, to be sent with the polling request *(optional)*.
-    - `authentication.username`
-    - `authentication.password`
-  - `httpHeaders`: A list of key/value pairs custom HTTP headers to be sent with the polling request (optional).
-  - `assert`: The response assertion to be used on the polling response (optional).
-    - `assert.statusCode`: An HTTP status code to be asserted.
-  - `tags`: A list of the check tags (optional).
-  - `ignoreSSL`: A flag to ignore broken/expired SSL certificates in case of using the HTTPS protocol.
-- Each report may have the following information:
-  - `status`: The current status of the URL.
-  - `availability`: A percentage of the URL availability.
-  - `outages`: The total number of URL downtimes.
-  - `downtime`: The total time, in seconds, of the URL downtime.
-  - `uptime`: The total time, in seconds, of the URL uptime.
-  - `responseTime`: The average response time for the URL.
-  - `history`: Timestamped logs of the polling requests.
+## Getting Started
 
-## Evaluation Criteria
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-- Code quality.
-- Code scalability as we should be able to add a new alerting notification channel like Slack, Firebase, SMS, etc.. with the minimum possible changes.
-- Unit tests.
+### Prerequisites
 
-## Bonus
+To be able to run the project on your system you should have:
+ - [Node 18.16.1+](https://nodejs.org/en) - A cross-platform JavaScript runtime environment.
+ - [MongoDB 6.0+](https://www.mongodb.com/docs/manual/administration/install-community) - A cross-platform document-oriented database program.
+ - [Git](https://git-scm.com/downloads) - A free and open-source distributed version control system.
 
-- API documentation.
-- Docker and Docker Compose.
-- [Pushover](https://pushover.net/) integration to receive alerts on mobile devices.
+### Installation
+To install the project on your system first open the terminal, then follow the given steps and execute the commands on your terminal.
 
-Try your best to implement as much as you can from the given requirements and feel free to add more if you want to.
+ 1. Clone the project from GitHub:
+ ``` git clone https://github.com/AbdullahAlabd/Up-Monitor```
+ 2. Switch to the project's directory:
+ ```cd Up-Monitor/``` 
+ 3. Install the required packages from *"package.json"*:
+ ```npm install```
+ 4. Take a copy of config.env.example file and name it config.env or by running: 
+```cp ./src/configs/config.env.example ./src/configs/config.env```
+ 5. to be able to send actual emails you can use Twilio SendGrid [free plan](https://sendgrid.com/pricing/) Find a step-by-step integration guide [here](https://www.twilio.com/blog/send-smtp-emails-node-js-sendgrid)
+ 6. update your credentials in config.env.
+ 7. Finally run the app on localhost: ```node app.js``` or using Nodemon for easier development ```npm run dev```
+
+## Documentation
+View the full API documentation:
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/5901918-7b50badc-62e6-4cfc-9e38-6794d4824277?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D5901918-7b50badc-62e6-4cfc-9e38-6794d4824277%26entityType%3Dcollection%26workspaceId%3D894a70f4-165e-46ac-b8a3-eb3fae565cde)
+
+
+## Author
+* **Abdullah Alabd** - *Initial work* - [Abdullahalabd](https://github.com/Abdullahalabd)
+
+See also the list of [contributors](https://github.com/AbdullahAlabd/Up-Monitor/graphs/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
