@@ -2,7 +2,7 @@ const webClient = require("../utils/web-client");
 const checksService = require("../services/checks-service");
 const usersService = require("../services/users-service");
 const calculateStats = require("../utils/calculate-stats");
-const notificationService = require("../services/notification-service");
+const eventEmitter = require("../utils/event-emitter");
 const logger = require("../utils/logger");
 
 const pollingJob = async (job) => {
@@ -23,12 +23,12 @@ const pollingJob = async (job) => {
         check.stats.lastStatus === false && check.stats.totalChecks;
       await checksService.updateStats(check._id, newStats);
       if (wentUp) {
-        const { messageTemplates } = notificationService;
         const user = await usersService.findById(check.userId);
-        notificationService.notify(
+        eventEmitter.emit(
+          "notify",
           user,
           { checkName: check.name },
-          messageTemplates.urlUpEmail,
+          "urlUpEmail",
           ["email"]
         );
       }
@@ -40,14 +40,14 @@ const pollingJob = async (job) => {
         interval
       );
       await checksService.updateStats(check._id, newStats);
-      const wentDown = newStats.consecutiveFailures == check.threshold;
+      const wentDown = newStats.consecutiveFailures === check.threshold;
       if (wentDown) {
-        const { messageTemplates } = notificationService;
         const user = await usersService.findById(check.userId);
-        notificationService.notify(
+        eventEmitter.emit(
+          "notify",
           user,
           { checkName: check.name },
-          messageTemplates.urlDownEmail,
+          "urlDownEmail",
           ["email"]
         );
       }
@@ -57,4 +57,4 @@ const pollingJob = async (job) => {
   }
 };
 
-module.exports = { pollingJob };
+module.exports = pollingJob;

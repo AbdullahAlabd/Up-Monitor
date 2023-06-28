@@ -1,39 +1,35 @@
 const emailClient = require("../utils/email-client");
 const logger = require("../utils/logger");
+const eventEmitter = require("../utils/event-emitter");
+const scheduler = require("../jobs/scheduler");
 
-const notify = async (user, payload, template, forceChannels = []) => {
-  for (const key in channels) {
-    if (channels.hasOwnProperty(key)) {
-      if (
-        forceChannels.includes(key) ||
-        user.notificationChannels.includes(key)
-      ) {
-        const parsedTemplate = template(user, payload);
-        await notifiers[channels[key]](user, parsedTemplate);
-      }
-    }
-  }
-};
+eventEmitter.on("notify", (userDto, payload, templateName, forceChannels) => {
+  notify(userDto, payload, templateName, forceChannels);
+});
 
-const notifiers = {
-  notifyByEmail: async (user, parsedTemplate) => {
-    try{
-      await emailClient.sendEmail(
-        user.email,
-        parsedTemplate.title,
-        parsedTemplate.message
-      );
-    } catch(error) {
-      logger.error(`[Email Client Error]: ${error}`);
+const notify = async (userDto, payload, templateName, forceChannels = []) => {
+  // userDto : {
+  //   name: String
+  //   email: String
+  //   notificationChannels: []
+  // }
+  channels.forEach((channel) => {
+    if (
+      forceChannels.includes(channel) ||
+      userDto.notificationChannels.includes(channel)
+    ) {
+      const parsedTemplate = messageTemplates[templateName](userDto, payload);
+      scheduler.scheduleNotificationJob({
+        channel,
+        userDto,
+        parsedTemplate
+      });
     }
-  },
-  notifyBySms: async (user, message) => {
-    throw new Error("SMS not implemented");
-  }
+  });
 };
 
 // list of all available channels with short codes, and the handler name.
-const channels = { email: "notifyByEmail", sms: "notifyBySms" };
+const channels = ["email", "sms"];
 // list of all available templates to be used for each channel.
 const messageTemplates = {
   urlUpEmail: (user, payload) => {

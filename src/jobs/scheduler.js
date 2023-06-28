@@ -32,4 +32,9 @@ const cancelPollingJob = async (data) => {
   }
 };
 
-module.exports = { schedulePollingJob, cancelPollingJob };
+const scheduleNotificationJob = async (data) => {
+  const {channel, userDto, parsedTemplate} = data;
+  await agenda.now(`notification-job`, {channel, userDto, parsedTemplate});
+}
+
+module.exports = { schedulePollingJob, cancelPollingJob, scheduleNotificationJob };

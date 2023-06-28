@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const authentication = require("./src/middleware/authenticator");
 const errorHandlerMiddleware = require("./src/middleware/error-handler");
 const agenda = require("./src/jobs/agenda");
+const notificationService = require("./src/services/notification-service"); // instantiate notification service
 // routes
 const usersRoute = require("./src/routes/users-route");
 const checksRoute = require("./src/routes/checks-route");

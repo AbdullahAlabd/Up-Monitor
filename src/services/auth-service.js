@@ -5,7 +5,7 @@ const { getTokens, getVerificationToken } = require("../utils/generate-tokens");
 const hashData = require("../utils/hash-data");
 const verifyPassword = require("../utils/verity-password");
 const jwt = require("jsonwebtoken");
-const notificationService = require("../services/notification-service");
+const eventEmitter = require("../utils/event-emitter");
 
 const register = async (userDto) => {
   const userExists = await usersService.findByEmail(
@@ -21,7 +21,7 @@ const register = async (userDto) => {
     ...userDto,
     password: hash
   });
-  return await createdUser._id;
+  return createdUser._id;
 };
 
 const verifySend = async (userId) => {
@@ -44,7 +44,8 @@ const verifySend = async (userId) => {
       userId: user._id,
       token: token
     });
-    await sendVerificationMail(user, token);
+    // send notification (email included)
+    eventEmitter.emit("notify", user, { token }, "verifyMail", ["email"]);
   } catch (error) {
     throw new customError.InternalServerError(error);
   }
@@ -60,9 +61,9 @@ const verifyReceive = async (token) => {
     if (!user) {
       throw new customError.NotFoundError("User does not exist!");
     }
-    var lastToken = (await verificationTokenService.findLastByUserId(user._id))
-      ?.token;
-    //isLastToken.forEach((element) => {console.log(element);});
+    const lastToken = (
+      await verificationTokenService.findLastByUserId(user._id)
+    )?.token;
     if (lastToken !== token) {
       throw new customError.UnauthorizedError(
         "Token is either invalid or expired!"
@@ -116,16 +117,6 @@ const logout = async (userId) => {
   // Disabled
   // JWT tokens cannot be invalidated,
   // unless using DB storage and TTL tokens (resulting in worse performance)
-};
-
-const sendVerificationMail = async (user, token) => {
-  const { messageTemplates } = notificationService;
-  notificationService.notify(
-    user,
-    { token },
-    messageTemplates.verifyMail,
-    (forceChannels = ["email"])
-  );
 };
 
 module.exports = {
