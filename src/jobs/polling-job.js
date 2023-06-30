@@ -12,7 +12,7 @@ const pollingJob = async (job) => {
     const clientInstance = webClient.getInstanceWithPayload(check);
     const { stats, interval } = check;
     try {
-      const response = await clientInstance.get();
+      const response = await clientInstance.get(clientInstance.defaults.url);
       const newStats = calculateStats(
         stats,
         true,
