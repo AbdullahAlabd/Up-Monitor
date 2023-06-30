@@ -81,11 +81,11 @@ const update = async (req, res, next) => {
       );
     }
     await scheduler.cancelPollingJob({ // cancel the old job
-      checkId: checkId
+      checkId: check._id
     }); 
     const updatedCheck = await checksService.update(check._id, req.body); // update in db
     await scheduler.schedulePollingJob({ // schedule a new job
-      checkId: checkId,
+      checkId: check._id,
       interval: updatedCheck.interval
     }); 
     const presentableCheck = getPresentableCheck(updatedCheck);
