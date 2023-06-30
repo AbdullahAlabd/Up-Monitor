@@ -1,6 +1,7 @@
 const scheduler = require("../jobs/scheduler");
 const checksService = require("../services/checks-service");
 const customError = require("../errors");
+const pollingLogsService = require("../services/polling-logs-service");
 
 const add = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ const add = async (req, res, next) => {
       checkId: check._id,
       interval: check.interval
     });
-    const presentableCheck = getPresentableCheck(check);
+    const presentableCheck = getPresentableCheck(check, null);
     return res.status(200).json({
       success: true,
       data: presentableCheck,
@@ -32,7 +33,8 @@ const get = async (req, res, next) => {
         "Unauthorized! you can only view your checks."
       );
     }
-    const presentableCheck = getPresentableCheck(check);
+    const pollingLogs = await pollingLogsService.findByCheckId(check._id);
+    const presentableCheck = getPresentableCheck(check, pollingLogs);
     return res.status(200).json({
       success: true,
       data: presentableCheck,
@@ -45,7 +47,7 @@ const get = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const {tag} = req.query;
+    const { tag } = req.query;
     const userChecks = await checksService.findAllByUserId(req.body.userId);
     if (userChecks?.length === 0) {
       return res.status(200).json({
@@ -54,9 +56,9 @@ const getAll = async (req, res, next) => {
         message: "Request successful! but you have no checks yet."
       });
     }
-    const presentableChecks = userChecks.map((check) =>
-      getPresentableCheck(check)
-    ).filter(check => (tag ? check.tags.includes(tag) : true));
+    const presentableChecks = userChecks
+      .map((check) => getPresentableCheck(check, null))
+      .filter((check) => (tag ? check.tags.includes(tag) : true));
     return res.status(200).json({
       success: true,
       data: presentableChecks,
@@ -80,15 +82,18 @@ const update = async (req, res, next) => {
         "Unauthorized! you can only view your checks."
       );
     }
-    await scheduler.cancelPollingJob({ // cancel the old job
+    await scheduler.cancelPollingJob({
+      // cancel the old job
       checkId: check._id
-    }); 
+    });
     const updatedCheck = await checksService.update(check._id, req.body); // update in db
-    await scheduler.schedulePollingJob({ // schedule a new job
+    await scheduler.schedulePollingJob({
+      // schedule a new job
       checkId: check._id,
       interval: updatedCheck.interval
-    }); 
-    const presentableCheck = getPresentableCheck(updatedCheck);
+    });
+    const pollingLogs = await pollingLogsService.findByCheckId(check._id);
+    const presentableCheck = getPresentableCheck(updatedCheck, pollingLogs);
     return res.status(200).json({
       success: true,
       data: presentableCheck,
@@ -124,7 +129,31 @@ const remove = async (req, res, next) => {
   }
 };
 
-const getPresentableCheck = (check) => {
+const getPresentableResponseLog = (log) => {
+  const presentable = {};
+  presentable.request = {
+    method: log.data.request.method,
+    fullUrl: log.data.request.fullUrl,
+    headers: log.data.request.headers,
+    timeoutMilliseconds: log.data.request.timeoutMilliseconds
+  };
+  presentable.response = {
+    headers: log.data.response.headers,
+    status: log.data.response.status,
+    statusText: log.data.response.statusText,
+    data: log.data.response.data
+  };
+  if (log.data.error) {
+    presentable.error = {
+      message: log.data.error.message
+    };
+  }
+  log.responseTimeMilliseconds = log.data.responseTimeMilliseconds;
+  log.timestamp = log.createdAt.toISOString();
+  return presentable;
+};
+
+const getPresentableCheck = (check, pollingLogs = null) => {
   const presentable = {};
   presentable.checkId = check._id;
   presentable.name = check.name;
@@ -164,6 +193,13 @@ const getPresentableCheck = (check) => {
     presentable.ignoreSSL = check.ignoreSSL;
   }
   presentable.createdAt = check.createdAt;
+  // get presentable logs
+  if (pollingLogs) {
+    const presentableLogs = pollingLogs.map((log) =>
+      getPresentableResponseLog(log)
+    );
+    presentable.history = presentableLogs;
+  }
   return presentable;
 };
 
