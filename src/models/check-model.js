@@ -72,7 +72,7 @@ const checkSchema = new mongoose.Schema({
   },
   // A list of key/value pairs custom HTTP headers to be sent with the polling request.
   httpHeaders: {
-    type: Array,
+    type: Object,
     default: null // delegate default to the request client
   },
   // The response assertion to be used on the polling response.

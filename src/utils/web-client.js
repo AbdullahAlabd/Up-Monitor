@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require("axios").default;
 
 const getConfig = (payload) => {
   const config = {};
@@ -13,7 +13,7 @@ const getConfig = (payload) => {
     payload?.port ? `:${payload.port}` : ""
   }`;
   // `headers` are custom headers to be sent
-  if (payload?.httpHeaders && payload?.httpHeaders.length > 0) {
+  if (payload?.httpHeaders) {
     config.headers = payload.httpHeaders;
   }
   // `timeout` specifies the number of milliseconds before the request times out.
