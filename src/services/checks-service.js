@@ -14,7 +14,7 @@ const findById = async (checkId) => {
 };
 
 const findAllByUserId = async (userId) => {
-  return await checkModel.find({ userId }).exec();
+  return await checkModel.find({ userId }).sort({ createdAt: -1 }).exec();
 };
 
 const update = async (checkId, checkDto) => {

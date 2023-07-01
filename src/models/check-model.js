@@ -112,5 +112,5 @@ const checkSchema = new Schema({
   }
 });
 
-checkSchema.index({ _id: 1, userId: 1 });
+checkSchema.index({ userId: 1, createdAt: -1});
 module.exports = mongoose.model("Check", checkSchema);
