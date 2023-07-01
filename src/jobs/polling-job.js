@@ -11,8 +11,8 @@ const pollingJob = async (job) => {
     const { checkId } = job.attrs.data;
     const check = await checksService.findById(checkId);
     const clientInstance = webClient.getInstanceWithPayload(check);
-    let response = null,
-      error = null;
+    let response = null;
+    let error = null;
     try {
       response = await clientInstance.get(clientInstance.defaults.url);
     } catch (err) {
@@ -65,30 +65,29 @@ const notifyIfNeeded = async (response, error, check, newStats) => {
 
 const getResponseLog = (response, error) => {
   const log = {};
-  let request = response?.request;
   let config = response?.config;
   if (error) {
-    request = error.request;
     config = error.config;
     response = error.response;
     log.error = {
-      code: error.code,
-      name: error.name,
       message: error.message
     };
   }
+
   log.request = {
-    method: request.method,
-    fullUrl: `${request.protocol}//${request.host}${request.path}`,
-    headers: config.headers,
-    timeoutMilliseconds: config.timeout
+    fullUrl: config.baseURL + config.url ?? "",
+    headers: config.headers
   };
-  log.response = {
-    headers: response.headers,
-    status: response.status,
-    statusText: response.statusText,
-    data: response.data
-  };
+  if (response) {
+    log.response = {
+      status: response.status,
+      statusText: response.statusText
+    };
+    const maxDataLength = 250;
+    log.response.data =
+      response.data.substring(0, maxDataLength - 1) +
+      (response.data.length > maxDataLength ? "..." : ""); // take a snippet of the data
+  }
   log.responseTimeMilliseconds = error
     ? error.responseTime
     : response.responseTime;

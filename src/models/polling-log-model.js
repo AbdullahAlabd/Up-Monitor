@@ -2,22 +2,17 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const requestSchema = new Schema({
-  method: { type: String },
   fullUrl: { type: String },
-  headers: { type: Object },
-  timeoutMilliseconds: { type: Number }
+  headers: { type: Object }
 });
 
 const responseSchema = new Schema({
-  headers: { type: Object },
   status: { type: Number },
   statusText: { type: String },
   data: { type: Object }
 });
 
 const errorSchema = new Schema({
-  code: { type: String },
-  name: { type: String },
   message: { type: String }
 });
 
