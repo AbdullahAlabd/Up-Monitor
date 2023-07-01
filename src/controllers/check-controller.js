@@ -132,24 +132,23 @@ const remove = async (req, res, next) => {
 const getPresentableResponseLog = (log) => {
   const presentable = {};
   presentable.request = {
-    method: log.data.request.method,
     fullUrl: log.data.request.fullUrl,
     headers: log.data.request.headers,
-    timeoutMilliseconds: log.data.request.timeoutMilliseconds
   };
-  presentable.response = {
-    headers: log.data.response.headers,
-    status: log.data.response.status,
-    statusText: log.data.response.statusText,
-    data: log.data.response.data
-  };
+  if(log.data.response) {
+    presentable.response = {
+      status: log.data.response.status,
+      statusText: log.data.response.statusText,
+      data: log.data.response.data
+    };
+  }
   if (log.data.error) {
     presentable.error = {
       message: log.data.error.message
     };
   }
-  log.responseTimeMilliseconds = log.data.responseTimeMilliseconds;
-  log.timestamp = log.createdAt.toISOString();
+  presentable.responseTimeMilliseconds = log.data.responseTimeMilliseconds;
+  presentable.timestamp = log.createdAt.toISOString();
   return presentable;
 };
 
