@@ -55,5 +55,6 @@ const pollingLogSchema = new Schema(
     }
   }
 );
+
 pollingLogSchema.index({ "metadata.checkId": 1, "createdAt": -1 }); // schema level
 module.exports = mongoose.model("PollingLogs", pollingLogSchema);

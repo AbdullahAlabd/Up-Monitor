@@ -22,6 +22,4 @@ const verificationTokenSchema = new Schema({
 });
 
 verificationTokenSchema.index({ userId: 1, createdAt: -1 }); // schema level
-const Token = mongoose.model("VerificationToken", verificationTokenSchema);
-
-module.exports = Token;
+module.exports = mongoose.model("VerificationToken", verificationTokenSchema);
