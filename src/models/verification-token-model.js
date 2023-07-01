@@ -13,7 +13,10 @@ const verificationTokenSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: () => {
+      // time of document creation
+      return Date.now();
+    },
     expires: 24 * 60 * 60 // 24 Hours
   }
 });

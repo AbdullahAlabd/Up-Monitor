@@ -27,7 +27,10 @@ const pollingLogSchema = new Schema(
   {
     createdAt: {
       type: Date,
-      default: Date.now(),
+      default: () => {
+        // time of document creation
+        return Date.now();
+      },
       //expires: is the TTL(time to live) for the document in seconds
       expires: 24 * 60 * 60 // 24 Hours
     },

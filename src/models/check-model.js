@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const checkSchema = new mongoose.Schema({
+const checkSchema = new Schema({
   // The id of the user who created the check.
   userId: {
     type: Schema.Types.ObjectId,
@@ -36,7 +36,7 @@ const checkSchema = new mongoose.Schema({
   port: {
     type: Number,
     min: 1,
-    max: 65535,
+    max: 65535, // 65535 is the maximum port number
     default: null // delegate default to the request client
   },
   // A webhook URL to receive a notification on.
@@ -100,12 +100,15 @@ const checkSchema = new mongoose.Schema({
       totalChecks: 0,
       upTime: 0,
       totalTime: 0, // check lifetime
-      avgResponseTime: 0,
+      avgResponseTime: 0
     }
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: () => {
+      // time of document creation
+      return Date.now();
+    }
   }
 });
 
