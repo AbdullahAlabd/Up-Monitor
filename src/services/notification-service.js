@@ -38,11 +38,9 @@ const messageTemplates = {
       message: `<H1>Mabrook, up again!<span class='emoji'>🎉</span></H1>
       </br>
       Hi ${user.name} </br> </br>
-      <h3>It seems like your check ${payload.checkName} has been failing beyond the threshold!<h3>
+      <h3>It seems like your check (${payload.checkName}) is now up again<h3>
       </br>
       This is just a notification.
-      </br>
-      We'll send you a notification once it's back up.
       </br>
       </br>
       </br>
@@ -55,7 +53,7 @@ const messageTemplates = {
       message: `<H1>M3lsh, Something is wrong!<span class='emoji'>⚠️</span></H1>
       </br>
       Hi ${user.name} </br> </br>
-      <h3>It seems like your check ${payload.checkName} has been failing beyond the threshold!<h3>
+      <h3>It seems like your check (${payload.checkName}) has been failing beyond the threshold!<h3>
       </br>
       This is just a notification.
       </br>
