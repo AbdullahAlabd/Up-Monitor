@@ -1,5 +1,5 @@
-const verificationTokenService = require("../services/verification-token-service");
-const usersService = require("../services/users-service");
+const verificationTokenRepository = require("../repositories/verification-token-repository");
+const userRepository = require("../repositories/user-repository");
 const customError = require("../errors");
 const { getTokens, getVerificationToken } = require("../utils/generate-tokens");
 const hashData = require("../utils/hash-data");
@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const eventEmitter = require("../utils/event-emitter");
 
 const register = async (userDto) => {
-  const userExists = await usersService.findByEmail(
+  const userExists = await userRepository.findByEmail(
     userDto.email.trim().toLowerCase()
   );
   if (userExists) {
@@ -17,7 +17,7 @@ const register = async (userDto) => {
     );
   }
   const hash = await hashData(userDto.password);
-  const createdUser = await usersService.create({
+  const createdUser = await userRepository.create({
     ...userDto,
     password: hash
   });
@@ -25,14 +25,14 @@ const register = async (userDto) => {
 };
 
 const verifySend = async (userId) => {
-  const user = await usersService.findById(userId);
+  const user = await userRepository.findById(userId);
   if (!user) {
     throw new customError.NotFoundError("User does not exist!");
   }
   if (user.verified) {
     throw new customError.BadRequestError("Your email is already verified!");
   }
-  const tokensCount = await verificationTokenService.countByUserId(user._id);
+  const tokensCount = await verificationTokenRepository.countByUserId(user._id);
   if (tokensCount >= parseInt(process.env.VERIFICATION_TOKEN_LIMIT)) {
     throw new customError.BadRequestError(
       "Verification token limit reached! please try again later."
@@ -40,7 +40,7 @@ const verifySend = async (userId) => {
   }
   const token = await getVerificationToken(user);
   try {
-    await verificationTokenService.create({
+    await verificationTokenRepository.create({
       userId: user._id,
       token: token
     });
@@ -57,19 +57,19 @@ const verifyReceive = async (token) => {
       token,
       process.env.VERIFICATION_TOKEN_PRIVATE_KEY
     );
-    const user = await usersService.findById(payload.userId);
+    const user = await userRepository.findById(payload.userId);
     if (!user) {
       throw new customError.NotFoundError("User does not exist!");
     }
     const lastToken = (
-      await verificationTokenService.findLastByUserId(user._id)
+      await verificationTokenRepository.findLastByUserId(user._id)
     )?.token;
     if (lastToken !== token) {
       throw new customError.UnauthorizedError(
         "Token is either invalid or expired!"
       );
     }
-    await usersService.update(user._id, { verified: true });
+    await userRepository.update(user._id, { verified: true });
   } catch (error) {
     throw new customError.UnauthorizedError(
       "Token is either invalid or expired!"
@@ -78,7 +78,7 @@ const verifyReceive = async (token) => {
 };
 
 const login = async (userDto) => {
-  const user = await usersService.findByEmail(
+  const user = await userRepository.findByEmail(
     userDto.email.trim().toLowerCase()
   );
   if (!user) {

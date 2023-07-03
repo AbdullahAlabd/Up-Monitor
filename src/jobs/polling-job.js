@@ -1,7 +1,7 @@
+const userRepository = require("../repositories/user-repository");
+const checkRepository = require("../repositories/check-repository");
+const pollingLogRepository = require("../repositories/polling-log-repository");
 const webClient = require("../utils/web-client");
-const checksService = require("../services/checks-service");
-const usersService = require("../services/users-service");
-const pollingLogsService = require("../services/polling-logs-service");
 const calculateStats = require("../utils/calculate-stats");
 const eventEmitter = require("../utils/event-emitter");
 const logger = require("../utils/logger");
@@ -9,7 +9,7 @@ const logger = require("../utils/logger");
 const pollingJob = async (job) => {
   try {
     const { checkId } = job.attrs.data;
-    const check = await checksService.findById(checkId);
+    const check = await checkRepository.findById(checkId);
     const clientInstance = webClient.getInstanceWithPayload(check);
     let response = null;
     let error = null;
@@ -26,9 +26,9 @@ const pollingJob = async (job) => {
       interval
     );
     await notifyIfNeeded(response, error, check, newStats);
-    await checksService.updateStats(check._id, newStats);
+    await checkRepository.updateStats(check._id, newStats);
     const responseLog = getResponseLog(response, error);
-    await pollingLogsService.create({
+    await pollingLogRepository.create({
       metadata: { checkId: check._id },
       data: responseLog
     });
@@ -44,12 +44,12 @@ const notifyIfNeeded = async (response, error, check, newStats) => {
   if (response && check.stats.lastStatus !== true && check.stats.totalChecks) {
     // URL was down and now it's up.
     isNotificationNeeded = true;
-    userToNotify = await usersService.findById(check.userId);
+    userToNotify = await userRepository.findById(check.userId);
     notificationType = "urlUpEmail";
   } else if (error && newStats.consecutiveFailures === check.threshold) {
     // URL was up and now it's down.
     isNotificationNeeded = true;
-    userToNotify = await usersService.findById(check.userId);
+    userToNotify = await userRepository.findById(check.userId);
     notificationType = "urlDownEmail";
   }
   if (isNotificationNeeded) {
