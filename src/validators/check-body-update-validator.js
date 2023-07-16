@@ -25,14 +25,12 @@ const checkBodyUpdate = Joi.object({
     .integer()
     .min(1)
     .max(525600)
-    .default(10)
     .optional()
     .label("Interval"),
   // The threshold of failed requests that will create an alert.
   threshold: Joi.number()
     .integer()
     .min(1)
-    .default(1)
     .optional()
     .label("Threshold"),
   // An HTTP authentication header, with the Basic scheme, to be sent with the polling request.

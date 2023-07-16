@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require("axios").default;
 
 const getConfig = (payload) => {
   const config = {};
@@ -13,7 +13,7 @@ const getConfig = (payload) => {
     payload?.port ? `:${payload.port}` : ""
   }`;
   // `headers` are custom headers to be sent
-  if (payload?.httpHeaders && payload?.httpHeaders.length > 0) {
+  if (payload?.httpHeaders) {
     config.headers = payload.httpHeaders;
   }
   // `timeout` specifies the number of milliseconds before the request times out.
@@ -46,6 +46,15 @@ const getConfig = (payload) => {
       rejectUnauthorized: false
     });
   }
+  // `maxContentLength` defines the max size of the http response content in bytes allowed in node.js
+  config.maxContentLength = 10_000_000; // ~10MB
+  // `responseType` indicates the type of data that the server will respond with
+  // options are: 'arraybuffer', 'document', 'json', 'text', 'stream'
+  // browser only: 'blob' | default : json
+  config.responseType = "text"; // get response data as string
+  // `transformResponse` allows changes to the response data to be made before
+  // it is passed to then/catch
+  config.transformResponse = [(data) => data]; // don't parse response data leave it string
   return config;
 };
 

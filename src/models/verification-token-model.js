@@ -13,12 +13,13 @@ const verificationTokenSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: () => {
+      // time of document creation
+      return Date.now();
+    },
     expires: 24 * 60 * 60 // 24 Hours
   }
 });
 
 verificationTokenSchema.index({ userId: 1, createdAt: -1 }); // schema level
-const Token = mongoose.model("VerificationToken", verificationTokenSchema);
-
-module.exports = Token;
+module.exports = mongoose.model("VerificationToken", verificationTokenSchema);

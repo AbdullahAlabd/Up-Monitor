@@ -4,9 +4,8 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const schedulePollingJob = async (data) => {
   try {
-    const { userId, checkId, interval } = data;
+    const { checkId, interval } = data;
     const job = agenda.create("polling-job", {
-      userId: userId,
       checkId: checkId
     });
     await job.repeatEvery(`${interval} minutes`).save();
@@ -19,11 +18,10 @@ const schedulePollingJob = async (data) => {
 
 const cancelPollingJob = async (data) => {
   try {
-    const { userId, checkId } = data;
+    const { checkId } = data;
     await agenda.cancel({
       name: "polling-job",
       data: {
-        userId: new ObjectId(userId),
         checkId: new ObjectId(checkId)
       }
     });
@@ -34,4 +32,9 @@ const cancelPollingJob = async (data) => {
   }
 };
 
-module.exports = { schedulePollingJob, cancelPollingJob };
+const scheduleNotificationJob = async (data) => {
+  const {channel, userDto, parsedTemplate} = data;
+  await agenda.now(`notification-job`, {channel, userDto, parsedTemplate});
+}
+
+module.exports = { schedulePollingJob, cancelPollingJob, scheduleNotificationJob };

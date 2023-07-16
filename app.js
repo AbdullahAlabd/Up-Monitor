@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const authentication = require("./src/middleware/authenticator");
 const errorHandlerMiddleware = require("./src/middleware/error-handler");
 const agenda = require("./src/jobs/agenda");
+const notificationService = require("./src/services/notification-service"); // instantiate notification service
 // routes
 const usersRoute = require("./src/routes/users-route");
 const checksRoute = require("./src/routes/checks-route");
@@ -14,7 +15,7 @@ const app = express();
 dotenv.config({ path: "./src/configs/config.env" });
 
 // to get request of json data
-app.use(express.json());
+app.use(express.json({limit: '10kb'})); // limit body size to 10kb
 app.use("/api/v1/users", usersRoute);
 app.use(authentication);
 app.use("/api/v1/checks", checksRoute);

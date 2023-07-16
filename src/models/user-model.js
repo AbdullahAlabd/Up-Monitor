@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   name: {
     type: String,
     trim: true,
@@ -30,7 +31,10 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: () => {
+      // time of document creation
+      return Date.now();
+    }
   },
   notificationChannels: {
     type: Array,
@@ -38,4 +42,5 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+userSchema.index({ email: 1});
 module.exports = mongoose.model("User", userSchema);
